@@ -1,37 +1,57 @@
-## Welcome to GitHub Pages
+# 论文阅读:"PHONETIC POSTERIORGRAMS FOR MANY-TO-ONE VOICE CONVERSION WITHOUT PARALLEL DATA TRAINING"
 
-You can use the [editor on GitHub](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+## 模型结构
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+---
 
-### Markdown
+### 1. 基本方法:基于DBLSTM的平行数据训练方法
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+ * 1.1. DBLSTM
 
-```markdown
-Syntax highlighted code block
+DBLSTM(*Deep Bidirectional Long ShortTerm Memory,深度双向长短时记忆网络*)是一种特殊的双向LSTM,它的结构如下:
 
-# Header 1
-## Header 2
-### Header 3
+![](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/blob/master/pics/DBLSTM.png?raw=true)
 
-- Bulleted
-- List
+其中每个方块是一个循环单元,t-1,t和t+1分别代表过去时刻,现在时刻和将来时刻的输入输出帧;
 
-1. Numbered
-2. List
+ * 1.2. 基本结构
 
-**Bold** and _Italic_ and `Code` text
+模型的基本结构由两部分组成,一部分是训练模块,一部分是转换模块,具体结构如下:
 
-[Link](url) and ![Image](src)
-```
+![](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/blob/master/pics/DBLSTMNetWork.png?raw=true)
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+   - 1.2.1. 训练模块
 
-### Jekyll Themes
+训练模块首先使用STRAIGHT分析提取源音频和目标音频的频谱包络得到mel倒频谱表示,然后使用DTW对齐源音频和目标音频,最后把成对的MCEP特征作为DBLSTM的训练数据,DBLSTM采用BPTT算法训练;
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+   - 1.2.2. 转换模块
+转换模块从源音频中提取基频F0和分周期部分AP以及MCEP特征,将MCEP特征输入训练好的DBLSTM模块,得到转换后的MCEP特征,然后均衡源音频和目标音频的均值和标准差得到转换后的Log F0,将转换后的F0和AP以及MCEP特征作为STRAIGHT声码器的输入,产生转换后的音频;
 
-### Support or Contact
+由于平行训练数据难以获得以及DTW的误差会很大地影响到最后的输出音频,所以论文不推荐这种方法,而是采用如下的替代方法:
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+### 2. 推荐方法:使用PPG的语音生成模型
+
+* 1.1. PPG
+
+PPG是时间-类别的矩阵,矩阵的元素代表着某个时间帧的语音属于某个语音类的后验概率,其中的语音类可以是一个特定的单词,发音或句音;
+
+* 1.2.基本结构
+
+![](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/blob/master/pics/VCwithPPGs.png?raw=true)
+
+模型由三个部分组成:训练部分1,训练部分2,转换部分;
+  - 1.2.1. 训练部分1
+  
+  训练部分1使用多说话者语料库来训练SI-ASR系统,SI-ASR的输入是从语料库提取的MFCC帧Xt,输出是后验概率Pt =(p(s|Xt)|s = 1, 2, · · · , C),p(s|Xt)是语音类为s的后验概率;
+  - 1.2.2. 训练部分2
+  
+  训练部分2的目的是训练一个DBLSTM来完成PPG到MCEP的转换,训练数据的PPG是由训练部分1中训练好的SI-ASR给出的,从目标音频中提取到的MFCC作为SI-ASR的输入,然后将PPG和目标音频的MCEP作为DBLSTM的训练数据,训练使用如下损失计算方式:
+  
+  ![](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/blob/master/pics/loss.png?raw=true)
+  
+  其中YT是从目标音频中提取的MCEP特征,YR是真实值;
+  
+  - 1.2.3 转换模型
+  
+  转换模型中F0和AP的获得方法和上述相同,而训练部分2中训练好的DBLSTM的输入MCEP特征由训练模型1中训练好的SI-ASR的输出提供,而SI-ASR的输入由源音频中提取到的MFCC提供;最后STRAIGHT声码器使用DBLSTM输出的MCEP以及提取到的F0和AR作为输入;
+  
