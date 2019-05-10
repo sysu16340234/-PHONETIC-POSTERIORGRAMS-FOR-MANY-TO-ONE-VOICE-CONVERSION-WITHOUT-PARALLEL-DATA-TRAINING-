@@ -55,3 +55,49 @@ PPG是时间-类别的矩阵,矩阵的元素代表着某个时间帧的语音属
   
   转换模型中F0和AP的获得方法和上述相同,而训练部分2中训练好的DBLSTM的输入MCEP特征由训练模型1中训练好的SI-ASR的输出提供,而SI-ASR的输入由源音频中提取到的MFCC提供;最后STRAIGHT声码器使用DBLSTM输出的MCEP以及提取到的F0和AR作为输入;
   
+  
+---
+# 实验:"deep-voice-conversion"
+
+**实验步骤:**
+
+* 执行train1.py训练模块1,使用eval1测试;
+
+* 使用train2.py训练模块2,使用eval2测试;
+
+* 执行convert.py获得结果;
+
+**实验中的问题:**
+
+* 报错:"train1.py: error: the following arguments are required: case"
+  
+  解决方法:传入参数的正确写法:train1.py [-h] [-ckpt CKPT] [-gpu GPU] case, -ckpt选择checkpoint,-gpu选择GPU,case是此次训练模型的名称,必须指定,否则无法运行;
+  
+* 报错:"train1.py line 76 error"
+
+  解决方法:看到源码中的第76行,将print('case: {}, logdir: {}'.format(args.case1, args.case, logdir_train1))改为print('case: {}, logdir: {}'.format(args.case, logdir_train1))
+  
+* 报错:"OSError: [Errno 13] Permission denied: '/data'"
+
+   解决方法:打开hparam目录下的default.yaml文件,将文件路径改为自己需要的路径,例如:
+   
+   ![](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/blob/master/pics/path.png?raw=true)
+   
+   
+* train1.py在训练epoch1时停留在0%
+
+   解决方法:train1需要的训练数据TIMIT没有给出,需要自己下载;
+   
+   
+ **实验结果**
+ 
+ 尚未运行完毕
+
+
+
+
+
+
+
+
+  
