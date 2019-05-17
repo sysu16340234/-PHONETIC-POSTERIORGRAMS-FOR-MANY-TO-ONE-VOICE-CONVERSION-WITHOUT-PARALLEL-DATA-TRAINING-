@@ -87,11 +87,23 @@ PPG是时间-类别的矩阵,矩阵的元素代表着某个时间帧的语音属
 * train1.py在训练epoch1时停留在0%
 
    解决方法:train1需要的训练数据TIMIT没有给出,需要自己下载;
+
+**于第十二周**
+
+* 报错:"NoBackendError"
+
+   解决方法:是由缺少ffmpeg导致,按安装ffmpeg可以解决问题:
    
    
  **实验结果**
  
- 尚未运行完毕
+ **于第十二周**
+ 
+ trian1:eproch 637:
+ 
+ ![](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/blob/master/pics/week12training.png?raw=true)
+ 
+ 
 
 
 
