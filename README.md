@@ -94,6 +94,12 @@ PPG是时间-类别的矩阵,矩阵的元素代表着某个时间帧的语音属
 
    解决方法:是由缺少ffmpeg导致,按安装ffmpeg可以解决问题:
    
+**于第十三周**
+
+* 问题:无论artic还是bible的样本,convert的结果都不好,含有严重的机械音
+
+   解决方法:尚未发现;
+   
    
  **实验结果**
  
@@ -103,6 +109,18 @@ PPG是时间-类别的矩阵,矩阵的元素代表着某个时间帧的语音属
  
  ![](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/blob/master/pics/week12training.png?raw=true)
  
+ **于第十三周**
+ 
+ 本周初步完成了两个网络的训练,在tensorboard查看训练效果如下:
+ 
+ 
+ ![](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/blob/master/tensorboard.png?raw=true)
+ 
+ train1的loss为0.449,train2的loss为6.4006e-3
+ 
+ 本周分别采用artic的音频和bible的音频进行convert:
+ 
+ ![](https://github.com/sysu16340234/-PHONETIC-POSTERIORGRAMS-FOR-MANY-TO-ONE-VOICE-CONVERSION-WITHOUT-PARALLEL-DATA-TRAINING-/blob/master/pics/convert.png?raw=true)
  
 
 
